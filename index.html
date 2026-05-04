@@ -419,7 +419,33 @@
                 if (data.status) {
                     document.getElementById('creator').textContent = `Creator: ${data.creator}`;
                     document.getElementById('status').textContent = `Status: ${data.status ? 'Success' : 'Failed'}`;
-                    document.getElementById('codeOutput').textContent = data.result.html;
+                    
+                    // XỬ LÝ LẤY CẢ HTML VÀ CSS 
+                    let combinedCode = "";
+                    
+                    if (data.result.html) {
+                        combinedCode += "<!-- ================= HTML ================= -->\n";
+                        combinedCode += data.result.html + "\n\n";
+                    }
+                    
+                    // Nếu API có trả về CSS ẩn, tự động bọc vào thẻ style
+                    if (data.result.css) {
+                        combinedCode += "<!-- ================= CSS ================= -->\n";
+                        combinedCode += "<style>\n" + data.result.css + "\n</style>\n\n";
+                    }
+
+                    // Thêm luôn JS phòng trường hợp API trả về JS
+                    if (data.result.js) {
+                        combinedCode += "<!-- ================= JAVASCRIPT ================= -->\n";
+                        combinedCode += "<script>\n" + data.result.js + "\n<\/script>\n\n";
+                    }
+
+                    // Fallback nếu kết quả API không phân tách html/css mà ném chung vào một chuỗi string
+                    if (!data.result.html && typeof data.result === 'string') {
+                        combinedCode = data.result;
+                    }
+
+                    document.getElementById('codeOutput').textContent = combinedCode || "Không lấy được dữ liệu code.";
                     
                     loading.classList.remove('active');
                     resultSection.classList.add('active');
@@ -456,4 +482,4 @@
         createStars();
     </script>
 </body>
-  </html>
+</html>
